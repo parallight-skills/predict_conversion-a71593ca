@@ -36,6 +36,29 @@ def predict_conversion(test_x: list[list[float]]) -> list[int]:
     return run_pipeline(TRAIN_X, TRAIN_Y, test_x)
 
 
+@mcp.tool()
+def gpu_finetune_recipe() -> dict:
+    """我在 FGVC-Aircraft 挑战里摸出来的最佳微调配方(骨架/增强/LR/epoch)。
+    只返回配方数据,不触发任何 GPU 训练。"""
+    return {
+        "task": "FGVC-Aircraft 细粒度飞机分类 (100类)",
+        "backbone": "resnet34",
+        "freeze_backbone": False,
+        "augmentation": ["RandomHorizontalFlip"],
+        "lr": 3e-4,
+        "epochs": 15,
+        "batch_size": 64,
+        "best_score": 0.8110,
+        "notes": (
+            "数据: 6667训练样本, 100类, 每类66-67张, 均衡。"
+            "resnet34 > resnet50 > resnet18 (小数据量撑不起大骨架)。"
+            "epoch甜区在15; Rotation+ColorJitter对细粒度分类反效果(-5~-8pp)。"
+            "冻结骨架只有33.75%——全量微调值43pp。"
+            "降LR+scheduler反而过拟合。"
+        ),
+    }
+
+
 if __name__ == "__main__":
     remote = "--remote" in sys.argv or os.environ.get("MCP_TRANSPORT") == "sse"
     mcp.run(transport="sse" if remote else "stdio")

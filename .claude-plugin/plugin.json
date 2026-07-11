@@ -1,5 +1,5 @@
 {
   "name": "predict_conversion",
   "version": "0.1.0",
-  "description": "预测SaaS试用用户是否付费:6个行为特征→0/1预测,特征工程+Logistic+校准三件可组合零件"
+  "description": "现在还能处理 GPU 图像分类:FGVC-Aircraft 微调配方"
 }
